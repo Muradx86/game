@@ -1,0 +1,72 @@
+global SinWrapper
+global CosWrapper
+global Abs
+global CtrlWord
+global Round
+global RandomU32
+%define ARG1 8
+%define ARG2 12
+%define ARG3 16
+CtrlWord:
+	PUSH EBP
+	MOV EBP,ESP
+	FSTCW WORD [EBP-ARG1]
+	MOV WORD AX,[EBP-ARG1]
+	MOVZX EAX,AX
+	POP EBP
+	RET
+	
+SinWrapper:
+	PUSH EBP
+	MOV EBP,ESP
+	FLD QWORD [EBP+ARG1]
+	FSIN
+	FSTP QWORD [EBP-8]
+	FLD QWORD [EBP-8] ;System V ABI i386 quirk.
+	POP EBP
+	RET
+
+CosWrapper:
+	PUSH EBP
+	MOV EBP,ESP
+	FLD QWORD [EBP+ARG1]
+	FCOS
+	FSTP QWORD [EBP-8]
+	FLD QWORD [EBP-8] ;System V ABI i386 quirk.
+	POP EBP
+	RET
+
+_Abs:
+	PUSH EBP
+	MOV EBP,ESP
+	FLD DWORD [EBP+ARG1]
+	FABS
+	FISTP DWORD [EBP-12]
+	MOV DWORD EAX,[EBP-12]
+	POP EBP
+	RET
+
+Round:
+	PUSH EBP
+	MOV EBP,ESP
+	FLD QWORD [EBP+ARG1]
+	FRNDINT
+	FISTP DWORD [EBP-8]
+	MOV DWORD EAX,[EBP-8]
+	POP EBP
+	RET 
+
+RandomU32:
+	PUSH EBP
+	MOV EBP,ESP
+	MOV EAX,1
+	CPUID
+	AND ECX,(1<<30)
+	JZ FAIL
+	RDRAND EAX
+	POP EBP
+	RET
+FAIL:
+	MOV EAX,-1
+	POP EBP
+	RET	
