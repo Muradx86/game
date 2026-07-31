@@ -5,6 +5,7 @@ global CtrlWord
 global Round
 global RandomU32
 extern Beep
+
 %define ARG1 8
 %define ARG2 12
 %define ARG3 16
