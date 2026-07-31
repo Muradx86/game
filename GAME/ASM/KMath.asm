@@ -4,6 +4,7 @@ global Abs
 global CtrlWord
 global Round
 global RandomU32
+extern Beep
 %define ARG1 8
 %define ARG2 12
 %define ARG3 16
@@ -67,6 +68,9 @@ RandomU32:
 	POP EBP
 	RET
 FAIL:
+	PUSH DWORD 100
+	PUSH DWORD 50
+	CALL Beep
 	MOV EAX,-1
 	POP EBP
 	RET	
